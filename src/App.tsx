@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useTranslation } from 'react-i18next';
 import {
   Wind,
   Stethoscope,
@@ -26,36 +27,6 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { UserMode, Medication } from './types';
-
-const medications: Medication[] = [
-  {
-    id: '1',
-    name: 'Salbutamol (Inhaler)',
-    purpose: 'Used for quick relief of asthma symptoms like wheezing and shortness of breath.',
-    instructions: 'Shake well, breathe out, press canister while breathing in slowly, hold breath for 10 seconds.',
-    safetyNotes: 'May cause rapid heartbeat or shakiness. Rinse mouth after use if it contains steroids.',
-    videoUrl: 'https://www.youtube.com/embed/Rdb3s9j6vyw',
-    thumbnail: '/images/salbutamol_thumbnail.png'
-  },
-  {
-    id: '2',
-    name: 'Paracetamol',
-    purpose: 'Relieves pain and reduces fever.',
-    instructions: 'Adults: 500mg-1g every 4-6 hours. Children: Dose based on weight/age as directed.',
-    safetyNotes: 'Do not exceed 4g in 24 hours for adults. Can cause liver damage if overdosed.',
-    videoUrl: 'https://www.youtube.com/embed/u_v95SjU6jI',
-    thumbnail: '/images/paracetamol_thumbnail.png'
-  },
-  {
-    id: '3',
-    name: 'Cetirizine',
-    purpose: 'Antihistamine used to treat hay fever and allergy symptoms.',
-    instructions: 'Take one 10mg tablet daily. Can be taken with or without food.',
-    safetyNotes: 'May cause drowsiness in some people. Avoid alcohol while taking.',
-    videoUrl: 'https://www.youtube.com/embed/8-zY_G_Z6_k',
-    thumbnail: '/images/cetirizine_thumbnail.png'
-  }
-];
 
 const staggerContainer = {
   hidden: { opacity: 0 },
@@ -84,6 +55,7 @@ const floatIcon = {
 };
 
 export default function App() {
+  const { t, i18n } = useTranslation();
   const [mode, setMode] = useState<UserMode>('adult');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -97,6 +69,40 @@ export default function App() {
   const toggleMode = () => {
     setMode(prev => prev === 'adult' ? 'child' : 'adult');
   };
+
+  const toggleLanguage = () => {
+    i18n.changeLanguage(i18n.language === 'en' ? 'nl' : 'en');
+  };
+
+  const medications: Medication[] = [
+    {
+      id: '1',
+      name: t('meds.salbutamol.name'),
+      purpose: t('meds.salbutamol.purpose'),
+      instructions: t('meds.salbutamol.inst'),
+      safetyNotes: t('meds.salbutamol.safety'),
+      videoUrl: 'https://www.youtube.com/embed/Rdb3s9j6vyw',
+      thumbnail: '/images/salbutamol_thumbnail.png'
+    },
+    {
+      id: '2',
+      name: t('meds.paracetamol.name'),
+      purpose: t('meds.paracetamol.purpose'),
+      instructions: t('meds.paracetamol.inst'),
+      safetyNotes: t('meds.paracetamol.safety'),
+      videoUrl: 'https://www.youtube.com/embed/u_v95SjU6jI',
+      thumbnail: '/images/paracetamol_thumbnail.png'
+    },
+    {
+      id: '3',
+      name: t('meds.cetirizine.name'),
+      purpose: t('meds.cetirizine.purpose'),
+      instructions: t('meds.cetirizine.inst'),
+      safetyNotes: t('meds.cetirizine.safety'),
+      videoUrl: 'https://www.youtube.com/embed/8-zY_G_Z6_k',
+      thumbnail: '/images/cetirizine_thumbnail.png'
+    }
+  ];
 
   return (
     <div className={`min-h-screen transition-colors duration-500 ${mode === 'child' ? 'child-friendly-gradient' : 'medical-gradient'}`}>
@@ -112,10 +118,10 @@ export default function App() {
           </div>
 
           <nav className="hidden md:flex items-center gap-8">
-            <a href="#lungs" className="text-sm font-medium hover:text-primary transition-colors">Lungs</a>
-            <a href="#conditions" className="text-sm font-medium hover:text-primary transition-colors">Conditions</a>
-            <a href="#ailments" className="text-sm font-medium hover:text-primary transition-colors">Ailments</a>
-            <a href="#medications" className="text-sm font-medium hover:text-primary transition-colors">Medications</a>
+            <a href="#lungs" className="text-sm font-medium hover:text-primary transition-colors">{t('nav.lungs')}</a>
+            <a href="#conditions" className="text-sm font-medium hover:text-primary transition-colors">{t('nav.conditions')}</a>
+            <a href="#ailments" className="text-sm font-medium hover:text-primary transition-colors">{t('nav.ailments')}</a>
+            <a href="#medications" className="text-sm font-medium hover:text-primary transition-colors">{t('nav.medications')}</a>
           </nav>
 
           <div className="flex items-center gap-4">
@@ -126,7 +132,7 @@ export default function App() {
               className={`rounded-full gap-2 transition-all ${mode === 'child' ? 'bg-yellow-100 border-yellow-300 text-yellow-800 hover:bg-yellow-200' : 'bg-blue-50 border-blue-200 text-blue-800 hover:bg-blue-100'}`}
             >
               {mode === 'adult' ? <Baby className="w-4 h-4" /> : <User className="w-4 h-4" />}
-              <span className="hidden sm:inline">{mode === 'adult' ? 'Switch to Child Mode' : 'Switch to Adult Mode'}</span>
+              <span className="hidden sm:inline">{mode === 'adult' ? t('mode.switch_child') : t('mode.switch_adult')}</span>
             </Button>
 
             <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
@@ -145,14 +151,30 @@ export default function App() {
             className="fixed inset-0 z-40 bg-white pt-20 px-4 md:hidden"
           >
             <nav className="flex flex-col gap-6 text-lg font-medium">
-              <a href="#lungs" onClick={() => setIsMenuOpen(false)}>How Lungs Work</a>
-              <a href="#conditions" onClick={() => setIsMenuOpen(false)}>Asthma & COPD</a>
-              <a href="#ailments" onClick={() => setIsMenuOpen(false)}>Fever & Cough</a>
-              <a href="#medications" onClick={() => setIsMenuOpen(false)}>Medications</a>
+              <a href="#lungs" onClick={() => setIsMenuOpen(false)}>{t('nav.lungs')}</a>
+              <a href="#conditions" onClick={() => setIsMenuOpen(false)}>{t('nav.conditions')}</a>
+              <a href="#ailments" onClick={() => setIsMenuOpen(false)}>{t('nav.ailments')}</a>
+              <a href="#medications" onClick={() => setIsMenuOpen(false)}>{t('nav.medications')}</a>
             </nav>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Floating Language Toggle */}
+      <div className="fixed bottom-6 left-6 z-[60] flex items-center gap-2 bg-white/90 backdrop-blur-sm px-4 py-2.5 rounded-full border border-gray-200 shadow-lg">
+        <span className={`text-xs font-bold ${i18n.language === 'en' ? 'text-gray-400' : 'text-primary'}`}>NL</span>
+        <button
+          onClick={toggleLanguage}
+          className="relative inline-flex h-6 w-11 items-center rounded-full bg-slate-200 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 shadow-inner"
+          style={{ backgroundColor: i18n.language === 'en' ? '#3b82f6' : '#cbd5e1' }}
+          aria-label="Toggle language"
+        >
+          <span
+            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow-sm ${i18n.language === 'en' ? 'translate-x-6' : 'translate-x-1'}`}
+          />
+        </button>
+        <span className={`text-xs font-bold ${i18n.language === 'en' ? 'text-primary' : 'text-gray-400'}`}>EN</span>
+      </div>
 
       <main className="pt-24 pb-12">
         <motion.section
@@ -164,36 +186,32 @@ export default function App() {
           <div className="max-w-3xl">
             <AnimatePresence mode="wait">
               <motion.div
-                key={mode}
+                key={mode + i18n.language}
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -15 }}
                 transition={{ duration: 0.3 }}
               >
                 <Badge variant="secondary" className="mb-4 px-3 py-1 text-xs uppercase tracking-wider font-semibold inline-block">
-                  {mode === 'adult' ? 'Professional Health Education' : 'Fun Health Learning!'}
+                  {mode === 'adult' ? t('hero.badge.adult') : t('hero.badge.child')}
                 </Badge>
                 <h1 className={`text-4xl md:text-6xl font-bold mb-6 leading-tight ${mode === 'child' ? 'text-orange-600 font-serif' : 'text-medical-dark'}`}>
-                  {mode === 'adult'
-                    ? 'Your Trusted Partner in Respiratory Health'
-                    : "Let's Learn How Our Bodies Work!"}
+                  {mode === 'adult' ? t('hero.title.adult') : t('hero.title.child')}
                 </h1>
                 <p className="text-lg text-muted-foreground mb-8 leading-relaxed block">
-                  {mode === 'adult'
-                    ? 'Providing evidence-based information on lung health, common ailments, and medication management to help you breathe easier.'
-                    : 'Welcome to HealthHub! We have cool stories about your lungs, why we cough, and how medicine helps us feel better.'}
+                  {mode === 'adult' ? t('hero.desc.adult') : t('hero.desc.child')}
                 </p>
               </motion.div>
             </AnimatePresence>
             <motion.div variants={fadeInUp} className="flex flex-wrap gap-4">
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button size="lg" className="rounded-full px-8 shadow-lg shadow-primary/20">
-                  Explore Topics
+                  {t('hero.explore')}
                 </Button>
               </motion.div>
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                 <Button size="lg" variant="outline" className="rounded-full px-8">
-                  Symptom Guide
+                  {t('hero.symptom_guide')}
                 </Button>
               </motion.div>
             </motion.div>
@@ -214,13 +232,13 @@ export default function App() {
                   <Wind className={`w-8 h-8 ${mode === 'child' ? 'text-orange-600' : 'text-primary'}`} />
                 </motion.div>
                 <h2 className={`text-3xl font-bold ${mode === 'child' ? 'text-orange-700' : 'text-medical-dark'}`}>
-                  How the Lungs Work
+                  {t('lungs.title')}
                 </h2>
               </div>
 
               <AnimatePresence mode="wait">
                 <motion.div
-                  key={mode}
+                  key={mode + i18n.language}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
@@ -230,40 +248,40 @@ export default function App() {
                   {mode === 'adult' ? (
                     <>
                       <p className="text-muted-foreground">
-                        The lungs are the center of the respiratory system. Their primary function is gas exchange: bringing oxygen into the body and removing carbon dioxide.
+                        {t('lungs.desc.adult')}
                       </p>
                       <div className="grid sm:grid-cols-2 gap-4">
                         <div className="p-4 bg-slate-50 rounded-xl">
                           <h4 className="font-semibold mb-2 flex items-center gap-2">
-                            <Wind className="w-4 h-4 text-primary" /> Inhalation
+                            <Wind className="w-4 h-4 text-primary" /> {t('lungs.inhalation')}
                           </h4>
-                          <p className="text-sm text-muted-foreground">The diaphragm contracts, creating space for air to rush into the lungs through the trachea and bronchi.</p>
+                          <p className="text-sm text-muted-foreground">{t('lungs.inhalation.desc')}</p>
                         </div>
                         <div className="p-4 bg-slate-50 rounded-xl">
                           <h4 className="font-semibold mb-2 flex items-center gap-2">
-                            <Droplets className="w-4 h-4 text-primary" /> Gas Exchange
+                            <Droplets className="w-4 h-4 text-primary" /> {t('lungs.exchange')}
                           </h4>
-                          <p className="text-sm text-muted-foreground">Occurs in the alveoli (tiny air sacs), where oxygen enters the blood and CO2 leaves it.</p>
+                          <p className="text-sm text-muted-foreground">{t('lungs.exchange.desc')}</p>
                         </div>
                       </div>
                     </>
                   ) : (
                     <>
                       <p className="text-lg text-orange-900 font-medium">
-                        Think of your lungs like two big balloons in your chest! 🎈🎈
+                        {t('lungs.desc.child.title')}
                       </p>
                       <ul className="space-y-4">
                         <li className="flex gap-3">
                           <div className="bg-orange-200 w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-orange-700 font-bold text-xs">1</div>
-                          <p>When you breathe in, your "balloons" fill up with fresh air called Oxygen.</p>
+                          <p>{t('lungs.desc.child.1')}</p>
                         </li>
                         <li className="flex gap-3">
                           <div className="bg-orange-200 w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-orange-700 font-bold text-xs">2</div>
-                          <p>The air goes down a tube called the windpipe, like a slide!</p>
+                          <p>{t('lungs.desc.child.2')}</p>
                         </li>
                         <li className="flex gap-3">
                           <div className="bg-orange-200 w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-orange-700 font-bold text-xs">3</div>
-                          <p>Inside, there are tiny branches like a tree that help the air get into your blood.</p>
+                          <p>{t('lungs.desc.child.3')}</p>
                         </li>
                       </ul>
                     </>
@@ -292,18 +310,16 @@ export default function App() {
               </div>
               <AnimatePresence mode="wait">
                 <motion.div
-                  key={mode}
+                  key={mode + i18n.language}
                   initial={{ opacity: 0, scale: 0.5 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.5 }}
                   transition={{ duration: 0.3 }}
                   className="absolute -bottom-6 -right-6 bg-white p-6 rounded-2xl shadow-xl max-w-[200px]"
                 >
-                  <p className="text-xs font-bold uppercase tracking-widest text-primary mb-2">Fun Fact</p>
+                  <p className="text-xs font-bold uppercase tracking-widest text-primary mb-2">{t('fun_fact.title')}</p>
                   <p className="text-sm italic">
-                    {mode === 'adult'
-                      ? "Your lungs have a surface area roughly the size of a tennis court!"
-                      : "You breathe about 20,000 times every single day! Wow!"}
+                    {mode === 'adult' ? t('fun_fact.adult') : t('fun_fact.child')}
                   </p>
                 </motion.div>
               </AnimatePresence>
@@ -314,8 +330,8 @@ export default function App() {
         <section id="conditions" className="bg-white/50 py-24 mb-24 scroll-mt-24">
           <div className="container mx-auto px-4">
             <div className="text-center max-w-2xl mx-auto mb-16">
-              <h2 className="text-3xl font-bold mb-4">Asthma, COPD & Allergies</h2>
-              <p className="text-muted-foreground">Understanding common respiratory conditions and how to manage them effectively.</p>
+              <h2 className="text-3xl font-bold mb-4">{t('cond.title')}</h2>
+              <p className="text-muted-foreground">{t('cond.subtitle')}</p>
             </div>
 
             <motion.div
@@ -335,23 +351,23 @@ export default function App() {
                   </div>
                   <CardHeader>
                     <div className="flex justify-between items-start">
-                      <CardTitle>Asthma</CardTitle>
-                      <Badge variant="outline" className="text-blue-600 border-blue-200">Common</Badge>
+                      <CardTitle>{t('cond.asthma')}</CardTitle>
+                      <Badge variant="outline" className="text-blue-600 border-blue-200">{t('cond.asthma.badge')}</Badge>
                     </div>
-                    <CardDescription>A condition where airways narrow and swell.</CardDescription>
+                    <CardDescription>{t('cond.asthma.desc')}</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <Accordion type="single" collapsible className="w-full">
                       <AccordionItem value="symptoms">
-                        <AccordionTrigger>Symptoms</AccordionTrigger>
+                        <AccordionTrigger>{t('cond.asthma.sym.title')}</AccordionTrigger>
                         <AccordionContent>
-                          Wheezing, shortness of breath, chest tightness, and coughing.
+                          {t('cond.asthma.sym.desc')}
                         </AccordionContent>
                       </AccordionItem>
                       <AccordionItem value="management">
-                        <AccordionTrigger>Management</AccordionTrigger>
+                        <AccordionTrigger>{t('cond.asthma.mgmt.title')}</AccordionTrigger>
                         <AccordionContent>
-                          Using inhalers, avoiding triggers (smoke, dust), and having an action plan.
+                          {t('cond.asthma.mgmt.desc')}
                         </AccordionContent>
                       </AccordionItem>
                     </Accordion>
@@ -369,23 +385,23 @@ export default function App() {
                   </div>
                   <CardHeader>
                     <div className="flex justify-between items-start">
-                      <CardTitle>COPD</CardTitle>
-                      <Badge variant="outline" className="text-teal-600 border-teal-200">Chronic</Badge>
+                      <CardTitle>{t('cond.copd')}</CardTitle>
+                      <Badge variant="outline" className="text-teal-600 border-teal-200">{t('cond.copd.badge')}</Badge>
                     </div>
-                    <CardDescription>Chronic Obstructive Pulmonary Disease.</CardDescription>
+                    <CardDescription>{t('cond.copd.desc')}</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <Accordion type="single" collapsible className="w-full">
                       <AccordionItem value="difference">
-                        <AccordionTrigger>Vs. Asthma</AccordionTrigger>
+                        <AccordionTrigger>{t('cond.copd.diff.title')}</AccordionTrigger>
                         <AccordionContent>
-                          COPD is usually progressive and permanent, often caused by smoking, whereas asthma is often reversible and triggered by allergies.
+                          {t('cond.copd.diff.desc')}
                         </AccordionContent>
                       </AccordionItem>
                       <AccordionItem value="care">
-                        <AccordionTrigger>Care Tips</AccordionTrigger>
+                        <AccordionTrigger>{t('cond.copd.care.title')}</AccordionTrigger>
                         <AccordionContent>
-                          Pulmonary rehabilitation, oxygen therapy, and smoking cessation are key.
+                          {t('cond.copd.care.desc')}
                         </AccordionContent>
                       </AccordionItem>
                     </Accordion>
@@ -403,23 +419,23 @@ export default function App() {
                   </div>
                   <CardHeader>
                     <div className="flex justify-between items-start">
-                      <CardTitle>Allergies</CardTitle>
-                      <Badge variant="outline" className="text-green-600 border-green-200">Seasonal</Badge>
+                      <CardTitle>{t('cond.allergies')}</CardTitle>
+                      <Badge variant="outline" className="text-green-600 border-green-200">{t('cond.allergies.badge')}</Badge>
                     </div>
-                    <CardDescription>Immune system reaction to foreign substances.</CardDescription>
+                    <CardDescription>{t('cond.allergies.desc')}</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <Accordion type="single" collapsible className="w-full">
                       <AccordionItem value="triggers">
-                        <AccordionTrigger>Common Triggers</AccordionTrigger>
+                        <AccordionTrigger>{t('cond.allergies.trig.title')}</AccordionTrigger>
                         <AccordionContent>
-                          Pollen, dust mites, pet dander, mold, and certain foods.
+                          {t('cond.allergies.trig.desc')}
                         </AccordionContent>
                       </AccordionItem>
                       <AccordionItem value="prevention">
-                        <AccordionTrigger>Prevention</AccordionTrigger>
+                        <AccordionTrigger>{t('cond.allergies.prev.title')}</AccordionTrigger>
                         <AccordionContent>
-                          Keep windows closed during high pollen days, use air purifiers, and wash bedding frequently.
+                          {t('cond.allergies.prev.desc')}
                         </AccordionContent>
                       </AccordionItem>
                     </Accordion>
@@ -436,32 +452,32 @@ export default function App() {
               <div className="glass-panel bg-red-50/50 p-8 rounded-3xl border border-red-100/50">
                 <div className="flex items-center gap-3 mb-6">
                   <Thermometer className="w-8 h-8 text-red-600" />
-                  <h3 className="text-2xl font-bold text-red-900">Fever Care</h3>
+                  <h3 className="text-2xl font-bold text-red-900">{t('ailments.fever.title')}</h3>
                 </div>
                 <Tabs defaultValue="adults" className="w-full">
                   <TabsList className="grid w-full grid-cols-2 mb-6">
-                    <TabsTrigger value="adults">Adults</TabsTrigger>
-                    <TabsTrigger value="children">Children</TabsTrigger>
+                    <TabsTrigger value="adults">{t('ailments.fever.adults')}</TabsTrigger>
+                    <TabsTrigger value="children">{t('ailments.fever.children')}</TabsTrigger>
                   </TabsList>
                   <TabsContent value="adults" className="space-y-4">
-                    <p className="text-sm font-medium text-red-800">When it&apos;s serious:</p>
+                    <p className="text-sm font-medium text-red-800">{t('ailments.fever.serious')}</p>
                     <ul className="text-sm space-y-2 list-disc pl-4 text-red-700">
-                      <li>Temperature above 103°F (39.4°C)</li>
-                      <li>Severe headache or stiff neck</li>
-                      <li>Difficulty breathing or chest pain</li>
+                      <li>{t('ailments.fever.adult.sym1')}</li>
+                      <li>{t('ailments.fever.adult.sym2')}</li>
+                      <li>{t('ailments.fever.adult.sym3')}</li>
                     </ul>
                     <Separator className="bg-red-200" />
-                    <p className="text-sm">Rest, stay hydrated, and use over-the-counter fever reducers if uncomfortable.</p>
+                    <p className="text-sm">{t('ailments.fever.adult.desc')}</p>
                   </TabsContent>
                   <TabsContent value="children" className="space-y-4">
-                    <p className="text-sm font-medium text-red-800">Special Care for Kids:</p>
+                    <p className="text-sm font-medium text-red-800">{t('ailments.fever.child.serious')}</p>
                     <ul className="text-sm space-y-2 list-disc pl-4 text-red-700">
-                      <li>Call doctor if baby under 3 months has any fever</li>
-                      <li>Watch for lethargy or dehydration</li>
-                      <li>Comfort is more important than the number on the thermometer</li>
+                      <li>{t('ailments.fever.child.sym1')}</li>
+                      <li>{t('ailments.fever.child.sym2')}</li>
+                      <li>{t('ailments.fever.child.sym3')}</li>
                     </ul>
                     <Separator className="bg-red-200" />
-                    <p className="text-sm">Use age-appropriate doses of children&apos;s paracetamol or ibuprofen.</p>
+                    <p className="text-sm">{t('ailments.fever.child.desc')}</p>
                   </TabsContent>
                 </Tabs>
               </div>
@@ -471,23 +487,23 @@ export default function App() {
               <div className="glass-panel bg-blue-50/50 p-8 rounded-3xl border border-blue-100/50">
                 <div className="flex items-center gap-3 mb-6">
                   <Stethoscope className="w-8 h-8 text-blue-600" />
-                  <h3 className="text-2xl font-bold text-blue-900">Cough Guide</h3>
+                  <h3 className="text-2xl font-bold text-blue-900">{t('ailments.cough.title')}</h3>
                 </div>
                 <div className="space-y-4">
                   <div className="flex items-start gap-3 p-3 bg-white rounded-xl shadow-sm">
-                    <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-none">Dry</Badge>
-                    <p className="text-sm">Tickly cough with no mucus. Often caused by allergies or cold.</p>
+                    <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-none">{t('ailments.cough.dry')}</Badge>
+                    <p className="text-sm">{t('ailments.cough.dry.desc')}</p>
                   </div>
                   <div className="flex items-start gap-3 p-3 bg-white rounded-xl shadow-sm">
-                    <Badge className="bg-green-100 text-green-700 hover:bg-green-100 border-none">Chesty</Badge>
-                    <p className="text-sm">Produces mucus. Helps clear the lungs. Stay hydrated to thin mucus.</p>
+                    <Badge className="bg-green-100 text-green-700 hover:bg-green-100 border-none">{t('ailments.cough.chesty')}</Badge>
+                    <p className="text-sm">{t('ailments.cough.chesty.desc')}</p>
                   </div>
                   <div className="flex items-start gap-3 p-3 bg-white rounded-xl shadow-sm">
-                    <Badge className="bg-orange-100 text-orange-700 hover:bg-orange-100 border-none">Whooping</Badge>
-                    <p className="text-sm">Severe coughing fits followed by a "whoop" sound. Seek medical help.</p>
+                    <Badge className="bg-orange-100 text-orange-700 hover:bg-orange-100 border-none">{t('ailments.cough.whoop')}</Badge>
+                    <p className="text-sm">{t('ailments.cough.whoop.desc')}</p>
                   </div>
                   <div className="pt-4">
-                    <p className="text-xs text-muted-foreground italic">Remedies: Honey (for ages 1+), steam, and hydration are often more effective than cough syrups.</p>
+                    <p className="text-xs text-muted-foreground italic">{t('ailments.cough.remedy')}</p>
                   </div>
                 </div>
               </div>
@@ -498,8 +514,8 @@ export default function App() {
         <section id="medications" className="container mx-auto px-4 mb-24 scroll-mt-24">
           <div className="flex items-center justify-between mb-12">
             <div>
-              <h2 className="text-3xl font-bold mb-2">Medication Safety</h2>
-              <p className="text-muted-foreground">Learn about common medications and how to use them safely.</p>
+              <h2 className="text-3xl font-bold mb-2">{t('meds.title')}</h2>
+              <p className="text-muted-foreground">{t('meds.subtitle')}</p>
             </div>
             <Pill className="w-12 h-12 text-primary opacity-20 hidden sm:block" />
           </div>
@@ -526,7 +542,7 @@ export default function App() {
                       </DialogTrigger>
                       <DialogContent className="max-w-4xl p-0 overflow-hidden bg-black border-none">
                         <DialogHeader className="p-4 bg-white">
-                          <DialogTitle>{med.name} - How to Use</DialogTitle>
+                          <DialogTitle>{med.name} - {t('meds.how_to_use')}</DialogTitle>
                         </DialogHeader>
                         <div className="aspect-video">
                           <iframe
@@ -548,19 +564,19 @@ export default function App() {
                   </CardHeader>
                   <CardContent className="flex-grow space-y-4">
                     <div>
-                      <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">Instructions</h4>
+                      <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">{t('meds.instructions')}</h4>
                       <p className="text-sm">{med.instructions}</p>
                     </div>
                     <div className="p-3 bg-amber-50 rounded-lg border border-amber-100">
                       <h4 className="text-xs font-bold uppercase tracking-widest text-amber-800 mb-1 flex items-center gap-1">
-                        <AlertCircle className="w-3 h-3" /> Safety Note
+                        <AlertCircle className="w-3 h-3" /> {t('meds.safety_note')}
                       </h4>
                       <p className="text-xs text-amber-900">{med.safetyNotes}</p>
                     </div>
                   </CardContent>
                   <CardFooter className="pt-0">
                     <Button variant="link" className="p-0 h-auto text-primary font-semibold">
-                      Read Full Leaflet <ChevronRight className="w-4 h-4" />
+                      {t('meds.read_leaflet')} <ChevronRight className="w-4 h-4" />
                     </Button>
                   </CardFooter>
                 </Card>
@@ -572,16 +588,16 @@ export default function App() {
         <section className="container mx-auto px-4 mb-24">
           <div className="bg-primary rounded-[2rem] p-8 md:p-12 text-white overflow-hidden relative">
             <div className="relative z-10 max-w-2xl">
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">Not feeling well?</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">{t('cta.title')}</h2>
               <p className="text-primary-foreground/80 text-lg mb-8">
-                Our quick guide can help you understand your symptoms and decide if you need to see a doctor.
+                {t('cta.desc')}
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button size="lg" variant="secondary" className="rounded-full px-8 font-bold">
-                  Start Symptom Guide
+                  {t('cta.btn.symptom')}
                 </Button>
                 <Button size="lg" variant="outline" className="rounded-full px-8 bg-white/10 border-white/20 hover:bg-white/20 text-white">
-                  Find a Pharmacy
+                  {t('cta.btn.pharmacy')}
                 </Button>
               </div>
             </div>
@@ -601,7 +617,7 @@ export default function App() {
                 </span>
               </div>
               <p className="max-w-md mb-6">
-                Your reliable source for respiratory health education and medication guidance. We empower patients with knowledge for better health outcomes.
+                {t('footer.desc')}
               </p>
               <div className="flex gap-4">
                 <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-primary transition-colors cursor-pointer">
@@ -610,19 +626,19 @@ export default function App() {
               </div>
             </div>
             <div>
-              <h4 className="text-white font-bold mb-6">Quick Links</h4>
+              <h4 className="text-white font-bold mb-6">{t('footer.links.title')}</h4>
               <ul className="space-y-4 text-sm">
-                <li><a href="#" className="hover:text-primary transition-colors">About Us</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Contact Support</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="hover:text-primary transition-colors">Terms of Use</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">{t('footer.links.about')}</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">{t('footer.links.contact')}</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">{t('footer.links.privacy')}</a></li>
+                <li><a href="#" className="hover:text-primary transition-colors">{t('footer.links.terms')}</a></li>
               </ul>
             </div>
             <div>
-              <h4 className="text-white font-bold mb-6">Emergency</h4>
-              <p className="text-sm mb-4">If you are experiencing a medical emergency, please call your local emergency services immediately.</p>
+              <h4 className="text-white font-bold mb-6">{t('footer.emerg.title')}</h4>
+              <p className="text-sm mb-4">{t('footer.emerg.desc')}</p>
               <div className="bg-red-900/30 border border-red-900/50 p-4 rounded-xl">
-                <p className="text-red-400 font-bold text-lg">Call 999 or 911</p>
+                <p className="text-red-400 font-bold text-lg">{t('footer.emerg.call')}</p>
               </div>
             </div>
           </div>
@@ -631,11 +647,11 @@ export default function App() {
 
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">
             <p className="text-xs text-slate-500">
-              © 2026 HealthHub Pharmacy & Education. All rights reserved.
+              {t('footer.copy')}
             </p>
             <div className="flex items-center gap-2 text-xs text-slate-500 bg-slate-800/50 px-4 py-2 rounded-full border border-slate-700">
               <AlertCircle className="w-4 h-4 text-amber-500" />
-              <span>Disclaimer: This website provides educational information only and is not a substitute for professional medical advice.</span>
+              <span>{t('footer.disclaimer')}</span>
             </div>
           </div>
         </div>
